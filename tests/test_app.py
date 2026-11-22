@@ -2,12 +2,14 @@ from pathlib import Path
 
 import pytest
 
+from model import RELAYS
+
 AppTest = pytest.importorskip("streamlit.testing.v1").AppTest
 
 APP = str(Path(__file__).resolve().parent.parent / "app.py")
 
 
-@pytest.mark.parametrize("relay", ["4x100", "4x400", "DMR"])
+@pytest.mark.parametrize("relay", list(RELAYS))
 def test_app_runs_for_each_relay(relay):
     at = AppTest.from_file(APP, default_timeout=30)
     at.run()

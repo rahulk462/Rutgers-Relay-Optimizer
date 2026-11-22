@@ -68,7 +68,7 @@ leg_types = list(dict.fromkeys(leg.leg_type for leg in relay.legs))
 adj_df = pd.DataFrame(
     {
         "leg type": [lt.label for lt in leg_types],
-        "from open": [f"{lt.open_event} m" for lt in leg_types],
+        "from open": [lt.open_event if lt.open_event == "hurdles" else f"{lt.open_event} m" for lt in leg_types],
         "factor": [DEFAULT_ADJUSTMENTS[lt.key].factor for lt in leg_types],
         "offset (s)": [DEFAULT_ADJUSTMENTS[lt.key].offset for lt in leg_types],
     }
@@ -104,7 +104,8 @@ locks: dict[int, str] = {}
 preferred: list[str] = []
 for j, (leg, col) in enumerate(zip(relay.legs, leg_cols)):
     with col:
-        st.markdown(f"**{leg.name}** · {leg.distance_m} m")
+        unit = "m hurdles" if leg.leg_type.open_event == "hurdles" else "m"
+        st.markdown(f"**{leg.name}** · {leg.distance_m} {unit}")
         st.caption(leg.leg_type.description)
         lock = st.selectbox("Lock", [ANY, *available], key=f"lock_{relay_key}_{j}")
         if lock != ANY:

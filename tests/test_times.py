@@ -114,3 +114,38 @@ def test_sample_data_solves_every_relay(relay):
     result = optimize(cost)
     assert len(set(result.best.runners)) == 4
     assert math.isfinite(result.best.total)
+
+
+def test_all_major_relays_defined():
+    assert set(RELAYS) == {"4x100", "4x200", "4x400", "4x800", "SHR", "SMR", "DMR"}
+    for relay in RELAYS.values():
+        assert relay.n_legs == 4
+
+
+def test_4x200_and_4x800_conversion():
+    r = roster(open_200=["21.50", "22.00"], open_800=["1:50.0", "1:52.0"])
+    c200 = build_cost_matrix(r, get_relay("4x200")).times
+    assert c200.at["A", "Leg 1"] == pytest.approx(21.50 + 0.10)
+    assert c200.at["A", "Leg 3"] == pytest.approx(21.50 - 0.60)
+    c800 = build_cost_matrix(r, get_relay("4x800")).times
+    assert c800.at["B", "Leg 1"] == pytest.approx(112.0)
+    assert c800.at["B", "Leg 4"] == pytest.approx(112.0 - 0.50)
+
+
+def test_shuttle_hurdles_use_hurdle_times():
+    r = roster(open_hurdles=["13.90", "14.30"], open_100=["10.5", "10.6"])
+    cost = build_cost_matrix(r, get_relay("SHR")).times
+    assert cost.at["A", "Leg 1"] == pytest.approx(13.90)
+    assert cost.at["A", "Leg 2"] == pytest.approx(13.90 + 0.10)  # touch-off, no flying start
+
+
+def test_smr_uses_200_200_400_800():
+    r = roster(open_200=["21.5", ""], open_400=["48.0", ""], open_800=["", "1:51.0"])
+    relay = get_relay("SMR")
+    assert [leg.distance_m for leg in relay.legs] == [200, 200, 400, 800]
+    cost = build_cost_matrix(r, relay).times
+    assert cost.at["A", "Leg 1"] == pytest.approx(21.6)
+    assert cost.at["A", "Leg 2"] == pytest.approx(20.9)
+    assert cost.at["A", "Leg 3"] == pytest.approx(47.3)
+    assert cost.at["B", "Leg 4"] == pytest.approx(110.5)
+    assert math.isinf(cost.at["A", "Leg 4"])

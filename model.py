@@ -54,6 +54,11 @@ LEG_TYPES: dict[str, LegType] = {
                 "Flying start, runs a straight."),
         LegType("100_flying_curve", "4x100 leg 3: flying, curve", "100",
                 "Flying start, runs the second curve."),
+        # 4x200
+        LegType("200_blocks", "4x200 leg 1: blocks, staggered curve", "200",
+                "Starts from the blocks on a staggered curve."),
+        LegType("200_flying", "4x200 legs 2 to 4: flying", "200",
+                "Flying start, a curve and a straight."),
         # 4x400
         LegType("400_lanes", "4x400 leg 1: blocks, all in lanes", "400",
                 "Starts from the blocks and stays in lanes the whole lap."),
@@ -61,6 +66,22 @@ LEG_TYPES: dict[str, LegType] = {
                 "Flying start, runs the first turn in lanes, then cuts in."),
         LegType("400_traffic", "4x400 legs 3 and 4: flying, in traffic", "400",
                 "Flying start from the inside lane, deals with traffic."),
+        # 4x800
+        LegType("800_lead", "4x800 leg 1: standing start", "800",
+                "Standing (waterfall or alley) start, 800 m."),
+        LegType("800_flying", "4x800 legs 2 to 4: flying", "800",
+                "Flying start, 800 m in traffic."),
+        # Shuttle hurdle relay
+        LegType("shuttle_blocks", "Shuttle hurdles leg 1: blocks", "hurdles",
+                "Starts from the blocks, a full hurdle race (110 mH men, 100 mH women)."),
+        LegType("shuttle_touch", "Shuttle hurdles legs 2 to 4: touch-off start", "hurdles",
+                "Starts when the incoming runner crosses the line (no baton, no flying start), "
+                "running the other way down the straight."),
+        # SMR (200-200-400-800)
+        LegType("smr_200_blocks", "SMR leg 1: 200 m, blocks", "200", "Starts from the blocks, 200 m."),
+        LegType("smr_200_flying", "SMR leg 2: 200 m, flying", "200", "Flying start, 200 m."),
+        LegType("smr_400", "SMR leg 3: 400 m, flying", "400", "Flying start, 400 m."),
+        LegType("smr_800", "SMR leg 4: 800 m, flying", "800", "Flying start, 800 m."),
         # DMR
         LegType("dmr_1200", "DMR leg 1: 1200 m, standing start", "1200",
                 "Standing start, 1200 m."),
@@ -84,11 +105,35 @@ RELAYS: dict[str, Relay] = {
             (100, "100_flying_curve"),
             (100, "100_flying_straight"),
         ]),
+        _relay("4x200", "4x200 m", [
+            (200, "200_blocks"),
+            (200, "200_flying"),
+            (200, "200_flying"),
+            (200, "200_flying"),
+        ]),
         _relay("4x400", "4x400 m", [
             (400, "400_lanes"),
             (400, "400_break_in"),
             (400, "400_traffic"),
             (400, "400_traffic"),
+        ]),
+        _relay("4x800", "4x800 m", [
+            (800, "800_lead"),
+            (800, "800_flying"),
+            (800, "800_flying"),
+            (800, "800_flying"),
+        ]),
+        _relay("SHR", "Shuttle hurdle relay", [
+            (110, "shuttle_blocks"),
+            (110, "shuttle_touch"),
+            (110, "shuttle_touch"),
+            (110, "shuttle_touch"),
+        ]),
+        _relay("SMR", "Sprint medley (SMR, 200-200-400-800)", [
+            (200, "smr_200_blocks"),
+            (200, "smr_200_flying"),
+            (400, "smr_400"),
+            (800, "smr_800"),
         ]),
         _relay("DMR", "Distance medley (DMR)", [
             (1200, "dmr_1200"),
@@ -100,7 +145,8 @@ RELAYS: dict[str, Relay] = {
 }
 
 # Open events a roster can list times for (columns ``open_<event>``).
-OPEN_EVENTS: tuple[str, ...] = ("100", "400", "800", "1200", "1600")
+# "hurdles" is the runner's open hurdle time: 110 mH for men, 100 mH for women.
+OPEN_EVENTS: tuple[str, ...] = ("100", "200", "400", "800", "1200", "1600", "hurdles")
 
 
 def open_column(event: str) -> str:
