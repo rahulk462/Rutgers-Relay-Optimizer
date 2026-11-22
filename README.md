@@ -23,7 +23,18 @@ streamlit run app.py
 
 Run the tests with `pytest`.
 
-To deploy for free, push this repo to GitHub and create an app on
+### Share it with coaches (GitHub Pages)
+
+The app is published at **https://rahulk462.github.io/Rutgers-Relay-Optimizer/**. Coaches just open
+the link; nothing to install. It uses [stlite](https://github.com/whitphx/stlite) to run the same
+Streamlit app entirely in the browser (Python via Pyodide), so roster data never leaves the coach's
+computer. The first visit takes 20 to 40 seconds to load Python; later visits are faster.
+
+Every push to `main` runs the tests and redeploys the page
+(`.github/workflows/pages.yml`, page shell in `web/index.html`). One-time setup: in the repo's
+**Settings → Pages**, set **Source** to **GitHub Actions**.
+
+You can also deploy the regular server version on
 [Streamlit Community Cloud](https://streamlit.io/cloud) pointing at `app.py`.
 
 ## Roster format
@@ -90,6 +101,7 @@ infinite costs.
 | `app.py` | The Streamlit page |
 | `tests/` | Solver agreement, constraints, conversions, and an app smoke test |
 | `sample_data.csv` | A made-up roster for the demo |
+| `web/index.html` | Page that runs the app in the browser for GitHub Pages |
 
 ## Later
 
